@@ -14,10 +14,14 @@ namespace DAL.Context
         {
         }
         public DbSet<UserRegistrationModel> Users { get; set; }
+        public DbSet<AdminRegistrationModel> Admins { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserRegistrationModel>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+            modelBuilder.Entity<AdminRegistrationModel>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
         }

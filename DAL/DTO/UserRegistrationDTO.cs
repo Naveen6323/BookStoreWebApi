@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.DTO
 {
-    public class UserRegistrationModel
+    public class UserRegistrationDTO
     {
-        [Key]
-        public int Id { get; set; }
+        
         [Required(ErrorMessage = "UserName is required")]
         [StringLength(50, ErrorMessage = "UserName cannot be longer than 50 characters")]
         [DefaultValue("")]
@@ -30,6 +29,5 @@ namespace DAL.Models
         [RegularExpression(@"^\d{10}$", ErrorMessage = "PhoneNumber must be 10 digits")]
         [DefaultValue("")]
         public string PhoneNumber { get; set; } = string.Empty;
-
     }
 }

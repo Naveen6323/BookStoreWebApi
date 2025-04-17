@@ -1,3 +1,5 @@
+using BLL.Interfaces;
+using BLL.Services.AuthService;
 using DAL;
 using DAL.Context;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ builder.Services.AddDbContext<UserContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs"));
 });
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
