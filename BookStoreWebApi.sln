@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStoreWebApi", "BookStoreWebApi\BookStoreWebApi.csproj", "{1A0C2F6D-57C2-4FFD-8FFF-E935AE443C02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{BC5E625D-3037-498F-A79A-DE4C5279B439}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{6E9F75F0-F02A-4F83-A0A8-94D5712D3A4F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A0C2F6D-57C2-4FFD-8FFF-E935AE443C02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A0C2F6D-57C2-4FFD-8FFF-E935AE443C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A0C2F6D-57C2-4FFD-8FFF-E935AE443C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A0C2F6D-57C2-4FFD-8FFF-E935AE443C02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5E625D-3037-498F-A79A-DE4C5279B439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5E625D-3037-498F-A79A-DE4C5279B439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5E625D-3037-498F-A79A-DE4C5279B439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5E625D-3037-498F-A79A-DE4C5279B439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E9F75F0-F02A-4F83-A0A8-94D5712D3A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E9F75F0-F02A-4F83-A0A8-94D5712D3A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E9F75F0-F02A-4F83-A0A8-94D5712D3A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E9F75F0-F02A-4F83-A0A8-94D5712D3A4F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A6A77B5-77D7-4D00-8E6F-9A5CBDB460A4}
+	EndGlobalSection
+EndGlobal
