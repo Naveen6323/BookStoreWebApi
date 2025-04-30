@@ -1,45 +1,49 @@
 ﻿using BLL.Interfaces;
-using BLL.Services.AuthService;
 using DAL.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Writers;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace BookStoreWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AdminController : ControllerBase
     {
-        private readonly IUserService userService;
-        public UserController(IUserService userService)
+        private readonly IAdminService adminService;
+        private readonly IConfiguration _config;
+        public AdminController(IAdminService adminService,IConfiguration config)
         {
-            this.userService = userService;
+            this.adminService = adminService;
+            _config = config;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> RegisterUser(UserRegistrationDTO user)
+        [HttpPost("admin")]
+        public async Task<IActionResult> RegisterAdmin(AdminRegistrationDTO admin)
         {
             try
             {
-                if (user == null)
+                if (admin == null)
                 {
-                    return BadRequest("User data is null");
+                    return BadRequest("Admin data is null");
                 }
-                var data = await userService.RegisterUser(user);
-                return Ok(new { isSuccess = true, message = "user registered succeccfully", data = data });
+                var data = await adminService.RegisterAdmin(admin);
+                return Ok(new { isSuccess = true, message = "admin registered succeccfully", data = data });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
         }
-
+        
         [HttpPost("login")]
-        public async Task<IActionResult> LoginUser(Login login)
+        public async Task<IActionResult> LoginAdmin(Login login)
         {
             try
             {
@@ -47,8 +51,8 @@ namespace BookStoreWebApi.Controllers
                 {
                     return BadRequest("Login data is null");
                 }
-                var data = await userService.LoginUser(login);
-                return Ok(new { isSuccess = true, message = "user logged in succeccfully", data = data });
+                var data = await adminService.LoginAdmin(login);
+                return Ok(new { isSuccess = true, message = "admin logged in succeccfully", data = data });
             }
             catch (Exception ex)
             {
@@ -57,17 +61,18 @@ namespace BookStoreWebApi.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
                 var roleClaim = User.FindFirst(ClaimTypes.Role);
-                if(roleClaim==null||string.IsNullOrEmpty(roleClaim.Value))
+                if (roleClaim == null || string.IsNullOrEmpty(roleClaim.Value))
                 {
-                    return BadRequest("Role claim is missing");
+                    return BadRequest("role is ivalid or null");
                 }
+
                 var role = roleClaim.Value;
-                var data = await userService.GetAllUsers(role);
+                var data = await adminService.GetAllAdmins(role);
                 return Ok(new { isSuccess = true, message = "all users", data = data });
             }
             catch (Exception ex)
@@ -80,7 +85,7 @@ namespace BookStoreWebApi.Controllers
         {
             try
             {
-                await userService.ResetPassword(token, newPassword);
+                await adminService.ResetPassword(token, newPassword);
                 return Ok(new { IsSuccess = true, message = "pass reset successsfull", data = newPassword });
             }
             catch (Exception ex)
@@ -93,13 +98,14 @@ namespace BookStoreWebApi.Controllers
         {
             try
             {
-                await userService.SendResetLink(email);
-                return Ok(new { IsSuccess = true, message = "reset link sent", data = email });
+                await adminService.SendResetLink(email);
+                return Ok(new { IsSuccess = true, message="reset link sent",data=email});
             }
             catch (Exception ex)
             {
-                return BadRequest(new { IsSuccess = false, data = ex.Message });
+                return BadRequest(new {IsSuccess=false,data=ex.Message});
             }
         }
+
     }
 }

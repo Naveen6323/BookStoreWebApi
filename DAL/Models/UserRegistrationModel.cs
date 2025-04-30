@@ -30,6 +30,9 @@ namespace DAL.Models
         [RegularExpression(@"^\d{10}$", ErrorMessage = "PhoneNumber must be 10 digits")]
         [DefaultValue("")]
         public string PhoneNumber { get; set; } = string.Empty;
+        [Required(ErrorMessage = "role is required")]
+        [DefaultValue("")]
+        public string Role { get; set; } = string.Empty;
 
     }
 }
