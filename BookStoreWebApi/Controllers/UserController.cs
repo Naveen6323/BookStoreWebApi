@@ -101,5 +101,21 @@ namespace BookStoreWebApi.Controllers
                 return BadRequest(new { IsSuccess = false, data = ex.Message });
             }
         }
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh( TokenResponse tokenModel)
+        {
+            try
+            {
+                var result = await userService.Refresh(tokenModel);
+                return Ok(new { IsSuccess = true, message = "token refreshed", data = result });
+            }
+            catch
+
+
+            (Exception ex)
+            {
+                return BadRequest(new { IsSuccess = false, message = ex.Message, data = string.Empty });
+            }
+        }
     }
 }

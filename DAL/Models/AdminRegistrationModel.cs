@@ -24,9 +24,13 @@ namespace DAL.Models
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; } = string.Empty;
-        [Required(ErrorMessage="role is required")]
+        [Required(ErrorMessage = "role is required")]
         [DefaultValue("")]
         public string Role { get; set; } = string.Empty;
-
+        [DefaultValue("")]
+        public string refreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiry { get; set; }
     }
+
+   
 }

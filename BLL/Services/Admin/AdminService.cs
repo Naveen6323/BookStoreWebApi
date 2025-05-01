@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,11 +22,13 @@ namespace BLL.Services.AuthService
         private readonly IConfiguration _config;
         private readonly UserContext user;
         private readonly IEmailService _emailService;
-        public AdminService(UserContext user, IConfiguration config,IEmailService emailService)
+        private readonly IRefreshToken refresh;
+        public AdminService(UserContext user, IConfiguration config,IEmailService emailService,IRefreshToken refresh)
         {
             this.user = user;
             _config = config;
             _emailService = emailService;
+            this.refresh = refresh;
         }
     
     
@@ -55,7 +58,7 @@ namespace BLL.Services.AuthService
 
 
 
-        public async Task<string> LoginAdmin(Login login)
+        public async Task<TokenResponse> LoginAdmin(Login login)
         {
             var admin = await user.Admins.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
             if (admin == null)
@@ -74,16 +77,56 @@ namespace BLL.Services.AuthService
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+            int expireTime =int.Parse(_config["Jwt:Expire"]);
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(1),
                 claims: claims,
                 signingCredentials: creds);
+            var refreshToken = refresh.GenerateRefreshToken();
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            admin.refreshToken = refreshToken;
+            admin.RefreshTokenExpiry = DateTime.Now.AddDays(int.Parse(_config["Jwt:RefreshExpire"]));
+            await user.SaveChangesAsync();
+
+            return new TokenResponse
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = refreshToken,
+            };
+
         }
+        
+        public async Task<TokenResponse> Refresh( TokenResponse tokenModel)
+        {
+            var principal = refresh.GetPrincipalFromExpiredToken(tokenModel.AccessToken);
+            if (principal == null)
+                throw new Exception("Invalid principle");
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("Invalid userid");
+
+            var storedToken = await user.Admins.FirstOrDefaultAsync(x=>x.Id== int.Parse(userId)&& x.refreshToken==tokenModel.RefreshToken);
+            if (storedToken == null || storedToken.RefreshTokenExpiry < DateTime.Now)
+                throw new Exception("Invalid token");
+
+            var newAccessToken = refresh.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = refresh.GenerateRefreshToken();
+
+            // Update refresh token in DB
+            storedToken.refreshToken = newRefreshToken;
+            storedToken.RefreshTokenExpiry = DateTime.Now.AddDays(7);
+            await user.SaveChangesAsync();
+
+            return new TokenResponse
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
+        }
+
+
 
         public async Task<List<AdminRegistrationDTO>> GetAllAdmins(string role)
         {
@@ -166,6 +209,7 @@ namespace BLL.Services.AuthService
                 await user.SaveChangesAsync();
 
         }
+        
 
     }
 }

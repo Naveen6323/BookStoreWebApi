@@ -21,13 +21,15 @@ namespace BLL.Services.user
         private readonly IConfiguration _config;
         private readonly UserContext user;
         private readonly IEmailService _emailService;
-        public UserService(UserContext user, IConfiguration config,IEmailService email)
+        private readonly IRefreshToken refresh;
+        public UserService(UserContext user, IConfiguration config,IEmailService email, IRefreshToken refresh)
         {
             this.user = user;
             _config = config;
             _emailService = email;
+            this.refresh = refresh;
         }
-        public async Task<string> LoginUser(Login login)
+        public async Task<TokenResponse> LoginUser(Login login)
         {
             var user = await this.user.Users.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
             if (user == null)
@@ -53,8 +55,17 @@ namespace BLL.Services.user
                 expires: DateTime.Now.AddMinutes(30),
                 claims: claims,
                 signingCredentials: creds);
+            var refreshToken = refresh.GenerateRefreshToken();
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            user.refreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.Now.AddDays(int.Parse(_config["Jwt:RefreshExpire"]));
+            await this.user.SaveChangesAsync();
+
+            return new TokenResponse
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = refreshToken,
+            };
         }
 
         public async Task<UserRegistrationDTO> RegisterUser(UserRegistrationDTO newuser)
@@ -160,6 +171,33 @@ namespace BLL.Services.user
             resetuser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await user.SaveChangesAsync();
 
+        }
+        public async Task<TokenResponse> Refresh(TokenResponse tokenModel)
+        {
+            var principal = refresh.GetPrincipalFromExpiredToken(tokenModel.AccessToken);
+            if (principal == null)
+                throw new Exception("Invalid principle");
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("Invalid userid");
+
+            var storedToken = await user.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId) && x.refreshToken == tokenModel.RefreshToken);
+            if (storedToken == null || storedToken.RefreshTokenExpiry < DateTime.Now)
+                throw new Exception("Invalid token");
+
+            var newAccessToken = refresh.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = refresh.GenerateRefreshToken();
+
+            // Update refresh token in DB
+            storedToken.refreshToken = newRefreshToken;
+            storedToken.RefreshTokenExpiry = DateTime.Now.AddDays(7);
+            await user.SaveChangesAsync();
+
+            return new TokenResponse
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
         }
     }
 }

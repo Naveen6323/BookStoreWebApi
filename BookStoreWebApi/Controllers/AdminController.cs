@@ -19,7 +19,7 @@ namespace BookStoreWebApi.Controllers
     {
         private readonly IAdminService adminService;
         private readonly IConfiguration _config;
-        public AdminController(IAdminService adminService,IConfiguration config)
+        public AdminController(IAdminService adminService,IConfiguration config, IRefreshToken refreshToken)
         {
             this.adminService = adminService;
             _config = config;
@@ -103,9 +103,26 @@ namespace BookStoreWebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new {IsSuccess=false,data=ex.Message});
+                return BadRequest(new { IsSuccess = false,message=ex.Message, data = string.Empty });
             }
         }
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] TokenResponse tokenModel)
+        {
+            try
+            {
+                var result = await adminService.Refresh(tokenModel);
+                return Ok(new { IsSuccess = true, message = "token refreshed", data = result });
+            }
+            catch
+
+
+            (Exception ex)
+            {
+                return BadRequest(new { IsSuccess = false, message = ex.Message, data = string.Empty });
+            }
+        }
+
 
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +34,10 @@ namespace DAL.Models
         [Required(ErrorMessage = "role is required")]
         [DefaultValue("")]
         public string Role { get; set; } = string.Empty;
+        [DefaultValue("")]
+        public string refreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiry { get; set; }
+
 
     }
 }

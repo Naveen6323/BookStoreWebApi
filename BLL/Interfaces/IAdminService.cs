@@ -10,11 +10,14 @@ namespace BLL.Interfaces
 {
     public interface IAdminService
     {
-        Task<string> LoginAdmin(Login login);
+        Task<TokenResponse> LoginAdmin(Login login);
         Task<AdminRegistrationDTO> RegisterAdmin(AdminRegistrationDTO admin);
         Task<List<AdminRegistrationDTO>> GetAllAdmins(string role);
         string GeneratePasswordResetToken( string email);
         Task SendResetLink( string email);
         Task ResetPassword(string token, string newPassword);
+        Task<TokenResponse> Refresh(TokenResponse tokenModel);
+        //public string GenerateRefreshToken();
+
     }
 }

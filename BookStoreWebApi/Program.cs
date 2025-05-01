@@ -1,4 +1,5 @@
 using BLL.Interfaces;
+using BLL.Services;
 using BLL.Services.AuthService;
 using BLL.Services.Email;
 using BLL.Services.user;
@@ -27,6 +28,7 @@ builder.Services.AddDbContext<UserContext>(options =>
 builder.Services.AddScoped<IAdminService,AdminService >();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRefreshToken, RefreshToken>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -41,6 +43,8 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+             ClockSkew = TimeSpan.Zero,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
