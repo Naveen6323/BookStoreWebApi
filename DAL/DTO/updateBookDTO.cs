@@ -5,11 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Models
+namespace DAL.DTO
 {
-    public class Book
+    public class updateBookDTO
     {
         [Key]
         public int Id { get; set; }
@@ -26,7 +25,6 @@ namespace DAL.Models
         public string? BookImage { get; set; }
         [Required(ErrorMessage = "Admin_id is required")]
         [DefaultValue("")]
-        [Column("admin_user_id")]
         public string AdminUserId { get; set; }
         [Required(ErrorMessage = "BookName is required")]
         [StringLength(50, ErrorMessage = "BookName cannot be longer than 50 characters")]
@@ -43,10 +41,6 @@ namespace DAL.Models
         [Required(ErrorMessage = "Price is required")]
         [DefaultValue(0)]
         public int Price { get; set; }
-        [Column("createdAt_date")]
         public DateTime CreatedAtDate { get; set; }
-        [Column("updatedAt_date")]
-        public DateTime UpdatedAtDate { get; set; }
     }
-
 }

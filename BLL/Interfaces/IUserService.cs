@@ -13,7 +13,7 @@ namespace BLL.Interfaces
         Task<UserRegistrationDTO> RegisterUser(UserRegistrationDTO user);
         Task<TokenResponse> LoginUser(Login login);
 
-        Task<List<UserRegistrationDTO>> GetAllUsers(string role);
+        Task<List<UserRegistrationDTO>> GetAllUsers();
         string GeneratePasswordResetToken(string email);
         Task SendResetLink(string email);
         Task ResetPassword(string token, string newPassword);
