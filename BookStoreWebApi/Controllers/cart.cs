@@ -19,7 +19,7 @@ namespace BookStoreWebApi.Controllers
             this.cartService = cartService;
         }
         [HttpPost]
-        public async Task<IActionResult> AddToCart(int bookId, int quantity)
+        public async Task<IActionResult> AddToCart(int bookId)
         {
             
             try
@@ -29,12 +29,8 @@ namespace BookStoreWebApi.Controllers
                 {
                     return BadRequest(new { IsSuccess = false, message = "User not found", data = string.Empty });
                 }
-                var cartItem = new AddCartDTO
-                {
-                    BookId = bookId,
-                    Quantity = quantity
-                };
-                var res = await cartService.AddToCart(cartItem, int.Parse(userId));
+                
+                var res = await cartService.AddToCart(bookId, int.Parse(userId));
                 return Ok(new { IsSuccess = true, message = "successfull", data = res });
             }
             catch (Exception ex)
@@ -43,7 +39,7 @@ namespace BookStoreWebApi.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCart(int cartId, int quantity)
+        public async Task<IActionResult> UpdateCart(int bookId, int quantity)
         {
             try
             {
@@ -53,7 +49,7 @@ namespace BookStoreWebApi.Controllers
                     return BadRequest(new { IsSuccess = false, message = "User not found", data = string.Empty });
                 }
                 
-                var res = await cartService.UpdateCart(cartId,quantity, int.Parse(userId));
+                var res = await cartService.UpdateCart(bookId,quantity, int.Parse(userId));
                 return Ok(new { IsSuccess = true, message = "successfull", data = res });
             }
             catch (Exception ex)

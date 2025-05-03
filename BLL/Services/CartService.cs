@@ -18,52 +18,59 @@ namespace BLL.Services
         {
             this.user = user;
         }
-        public async Task<cartResponseDTO> AddToCart(AddCartDTO cart, int userId)
+        public async Task<cartResponseDTO> AddToCart(int bookId, int userId)
         {
-            var book = await user.Books.FindAsync(cart.BookId);
+            var book = await user.Books.FindAsync(bookId);
             if (book == null)
             {
                 throw new Exception("Book not found");
             }
-            var cartItem = await user.Carts.Where(x => x.bookId == cart.BookId && x.UserId == userId).FirstOrDefaultAsync();
+            if (book.Quantity == 0)
+                throw new Exception("Out of Stock");
+            var cartItem = await user.Carts.Where(x => x.bookId == bookId && x.UserId == userId).FirstOrDefaultAsync();
             if (cartItem == null)
             {
                 cartItem = new Cart
                 {
-                    bookId = cart.BookId,
+                    bookId = bookId,
                     UserId = userId,
-                    Quantity = cart.Quantity,
-                    price = await user.Books.Where(x => x.Id == cart.BookId).Select(x => x.Price).FirstOrDefaultAsync()
+                    Quantity=1,
+                    price = await user.Books.Where(x => x.Id == bookId).Select(x => x.Price).FirstOrDefaultAsync()
                 };
                 await user.Carts.AddAsync(cartItem);
                 await user.SaveChangesAsync();
             }
             else
             {
-                cartItem.Quantity += cart.Quantity;
-                user.Carts.Update(cartItem);
-                await user.SaveChangesAsync();
+                if (cartItem.Quantity < book.Quantity)
+                {
+                    cartItem.Quantity += 1;
+                    await user.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new Exception("No more stock to Add in Cart");
+                }
             }
 
             return new cartResponseDTO
             {
+                Id=cartItem.Id,
                 bookId = cartItem.bookId,
                 UserId = cartItem.UserId,
                 Quantity = cartItem.Quantity,
                 Price = cartItem.price,
                 TotalPrice = cartItem.Quantity * cartItem.price,
-                book = new cartBookResponseDTO
-                {
-                    BookName = book.BookName,
-                    Author = book.Author,
-                    Description = book.Description
-                }
+                BookName = book.BookName,
+                Author = book.Author,
+                Description = book.Description
+                
             };
             }
 
-        public async Task<string> UpdateCart(int cartId, int quantity, int userId)
+        public async Task<string> UpdateCart(int bookId, int quantity, int userId)
         {
-            var cartItem = user.Carts.Where(x => x.Id == cartId && x.UserId == userId).FirstOrDefault();
+            var cartItem = user.Carts.Where(x => x.bookId == bookId && x.UserId == userId).FirstOrDefault();
             if (cartItem == null)
             {
                 throw new Exception("Cart item not found");
@@ -107,12 +114,10 @@ namespace BLL.Services
                     Quantity = item.Quantity,
                     Price = item.price,
                     TotalPrice = item.Quantity * item.price,
-                    book = new cartBookResponseDTO
-                    {
-                        BookName = book.BookName,
-                        Author = book.Author,
-                        Description = book.Description
-                    }
+                    BookName = book.BookName,
+                    Author = book.Author,
+                    Description = book.Description
+                    
                 });
             }
 

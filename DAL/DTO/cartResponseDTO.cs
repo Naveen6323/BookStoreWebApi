@@ -14,7 +14,9 @@ namespace DAL.DTO
         public int UserId { get; set; }
         public int Id { get; set; }
         public int bookId { get; set; }
-        public cartBookResponseDTO book { get; set; }
+        public string BookName { get;  set; }
+        public string Author { get; set; }
+        public string Description { get; set; }
         public int Quantity { get; set; }
         public int Price { get; set; }
         public int TotalPrice { get; set; }

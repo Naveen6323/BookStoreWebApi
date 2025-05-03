@@ -9,7 +9,7 @@ namespace BLL.Interfaces
 {
     public interface ICartService
     {
-        Task<cartResponseDTO> AddToCart(AddCartDTO cart,int userId);
+        Task<cartResponseDTO> AddToCart(int bokkkId,int userId);
         Task<string> UpdateCart(int cartId, int quantity, int userId);
         Task<AllCartItemsDTO> GetAllCartItems(int userid);
         //Task<bool> UpdateCartItem(int bookId, int userId, int quantity);
