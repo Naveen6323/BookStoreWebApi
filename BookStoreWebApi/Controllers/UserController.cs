@@ -61,13 +61,8 @@ namespace BookStoreWebApi.Controllers
         {
             try
             {
-                var roleClaim = User.FindFirst(ClaimTypes.Role);
-                if(roleClaim==null||string.IsNullOrEmpty(roleClaim.Value))
-                {
-                    return BadRequest("Role claim is missing");
-                }
-                var role = roleClaim.Value;
-                var data = await userService.GetAllUsers(role);
+               
+                var data = await userService.GetAllUsers();
                 return Ok(new { isSuccess = true, message = "all users", data = data });
             }
             catch (Exception ex)

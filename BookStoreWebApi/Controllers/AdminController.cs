@@ -60,19 +60,13 @@ namespace BookStoreWebApi.Controllers
             }
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var roleClaim = User.FindFirst(ClaimTypes.Role);
-                if (roleClaim == null || string.IsNullOrEmpty(roleClaim.Value))
-                {
-                    return BadRequest("role is ivalid or null");
-                }
-
-                var role = roleClaim.Value;
-                var data = await adminService.GetAllAdmins(role);
+                
+                var data = await adminService.GetAllAdmins();
                 return Ok(new { isSuccess = true, message = "all users", data = data });
             }
             catch (Exception ex)

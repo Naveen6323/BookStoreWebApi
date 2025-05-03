@@ -94,7 +94,7 @@ namespace BLL.Services.user
 
 
 
-        public async Task<List<UserRegistrationDTO>> GetAllUsers(string role)
+        public async Task<List<UserRegistrationDTO>> GetAllUsers()
         {
 
             return await user.Users.Select(x => new UserRegistrationDTO

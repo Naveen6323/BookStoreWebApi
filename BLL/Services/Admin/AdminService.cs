@@ -81,7 +81,7 @@ namespace BLL.Services.AuthService
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
-                expires: DateTime.Now.AddMinutes(1),
+                expires: DateTime.Now.AddMinutes(expireTime),
                 claims: claims,
                 signingCredentials: creds);
             var refreshToken = refresh.GenerateRefreshToken();
@@ -128,12 +128,9 @@ namespace BLL.Services.AuthService
 
 
 
-        public async Task<List<AdminRegistrationDTO>> GetAllAdmins(string role)
+        public async Task<List<AdminRegistrationDTO>> GetAllAdmins()
         {
-            if (role != "admin")
-            {
-                throw new Exception("you are not authorized");
-            }
+            
             return await user.Admins.Select(x => new AdminRegistrationDTO
             {
                 UserName = x.UserName,

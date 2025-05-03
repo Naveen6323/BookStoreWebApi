@@ -15,6 +15,7 @@ namespace DAL.Context
         }
         public DbSet<UserRegistrationModel> Users { get; set; }
         public DbSet<AdminRegistrationModel> Admins { get; set; }
+        public DbSet<Book> Books { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
