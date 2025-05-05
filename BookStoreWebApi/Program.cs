@@ -3,6 +3,7 @@ using BLL.Services;
 using BLL.Services.AuthService;
 using BLL.Services.Email;
 using BLL.Services.user;
+using BookStoreWebApi.Controllers;
 using DAL;
 using DAL.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRefreshToken, RefreshToken>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IWishList, WishListService>();
 
 builder.Services.AddAuthentication(options =>
 {
