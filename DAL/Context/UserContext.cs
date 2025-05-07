@@ -18,6 +18,7 @@ namespace DAL.Context
         public DbSet<Book> Books { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<WishList> WhishLists { get; set; }
+        public DbSet<CustomerDetail> CustomerDetails { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

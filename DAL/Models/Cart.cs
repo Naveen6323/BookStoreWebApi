@@ -27,5 +27,7 @@ namespace DAL.Models
         [DefaultValue(0)]
         public int price { get; set; }
 
+        public bool IsPurchased { get; set; } = false;
+
     }
 }
